@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://dtb04b2bo35og"]
+
+[ext_resource type="Script" uid="uid://cju7y3xhpj0gu" path="res://script/playerScripts/weapons.gd" id="1_fjp46"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_2qw5g"]
+size = Vector3(0.4, 0.4, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_78ya6"]
+size = Vector3(1.2, 1, 1)
+
+[node name="weapons" type="Node3D" unique_id=1990929830]
+script = ExtResource("1_fjp46")
+weaponName = "fists"
+type = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1337707592]
+mesh = SubResource("BoxMesh_2qw5g")
+
+[node name="RayCast3D" type="RayCast3D" parent="." unique_id=702965883]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 0.5, 0)
+target_position = Vector3(0, 0, -10)
+collision_mask = 2
+debug_shape_custom_color = Color(1, 1, 1, 1)
+
+[node name="Area3D" type="Area3D" parent="." unique_id=346428329]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" unique_id=832492693]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 0, 0)
+shape = SubResource("BoxShape3D_78ya6")

@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dvvg307gmlhc6"]
 
 [ext_resource type="Script" uid="uid://chc0uckreu163" path="res://script/playerScripts/player.gd" id="1_3vyb7"]
+[ext_resource type="PackedScene" uid="uid://dtb04b2bo35og" path="res://scenes/playerStuff/weapons.tscn" id="2_gjgum"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_2qw5g"]
 
@@ -13,3 +14,6 @@ shape = SubResource("CapsuleShape3D_2qw5g")
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1127335141]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 fov = 90.0
+
+[node name="weapons" parent="Camera3D" unique_id=1990929830 instance=ExtResource("2_gjgum")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, -0.5, -0.4)
