@@ -1,28 +1,45 @@
 extends CharacterBody3D
 
+const SPEED := 2.0
+const ACCEL := 3.0
 
-const SPEED = 5.0
-const JUMP_VELOCITY = 4.5
+@onready var nav := $NavigationAgent3D
+@onready var player
+var health := 100
+
+enum enemyState {
+	IDLE,
+	PATROLING,
+	CAUTION,
+	ATTACKING
+}
+
+
+func _ready() -> void:
+	player = get_node('/root/test/player')
 
 
 func _physics_process(delta: float) -> void:
 	# Add the gravity.
 	if not is_on_floor():
 		velocity += get_gravity() * delta
-
-	# Handle jump.
-	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
-		velocity.y = JUMP_VELOCITY
-
-	# Get the input direction and handle the movement/deceleration.
-	# As good practice, you should replace UI actions with custom gameplay actions.
-	var input_dir := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
-	var direction := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
-	if direction:
-		velocity.x = direction.x * SPEED
-		velocity.z = direction.z * SPEED
+		
+	look_at(player.position)
+	
+	#I have used this tutorial to figure out how to move the enemy to the players position
+	#https://www.youtube.com/watch?v=XvRY-g27OQk
+	var direction = (nav.get_next_path_position() - global_position).normalized()
+	if !nav.is_navigation_finished():
+		velocity.x = move_toward(0, SPEED * direction.x, ACCEL)
+		velocity.z = move_toward(0, SPEED * direction.z, ACCEL)
 	else:
-		velocity.x = move_toward(velocity.x, 0, SPEED)
-		velocity.z = move_toward(velocity.z, 0, SPEED)
-
+		velocity.x = move_toward(velocity.x, 0, ACCEL)
+		velocity.z = move_toward(velocity.z, 0, ACCEL)
+	
 	move_and_slide()
+	
+	if health <= 0:
+		queue_free()
+	
+	print(nav.get_next_path_position())
+	nav.target_position = player.position

@@ -1,15 +1,20 @@
 extends CharacterBody3D
 
+class_name player
+
 const SPEED := 5.0
 const ACCEL := 3.0
 const JUMP_VELOCITY := 6
 
 @onready var global : globals = get_node("/root/Gobals")
 @onready var camera := $Camera3D
-@onready var weapon := $weapons
+@onready var weapon := $Camera3D/weapons
+@onready var animationPlayer := $AnimationPlayer
 
+var health := 100
 var rotY : float
 var rotX : float
+var speedMod := 1.0
 var currentPlayerState : playerState = playerState.PLAY
 
 enum playerState {
@@ -41,6 +46,13 @@ func _input(event: InputEvent) -> void:
 	elif Input.is_action_just_pressed("esc") and currentPlayerState == playerState.PAUSE:
 		currentPlayerState = playerState.PLAY
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	
+	if Input.is_action_just_pressed("crouch"):
+		animationPlayer.play("crouch")
+		speedMod = 0.5
+	elif Input.is_action_just_released("crouch"):
+		animationPlayer.play_backwards("crouch")
+		speedMod = 1
 
 
 func _physics_process(delta: float) -> void:
@@ -53,13 +65,11 @@ func _physics_process(delta: float) -> void:
 		if Input.is_action_just_pressed("jump") and is_on_floor():
 			velocity.y = JUMP_VELOCITY
 
-		# Get the input direction and handle the movement/deceleration.
-		# As good practice, you should replace UI actions with custom gameplay actions.
 		var input_dir := Input.get_vector("left", "right", "forward", "backward")
 		var direction := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 		if direction:
-			velocity.x = move_toward(0, SPEED * direction.x, ACCEL)
-			velocity.z = move_toward(0, SPEED * direction.z, ACCEL)
+			velocity.x = move_toward(0, (SPEED * speedMod) * direction.x, ACCEL)
+			velocity.z = move_toward(0, (SPEED * speedMod) * direction.z, ACCEL)
 		else:
 			velocity.x = move_toward(velocity.x, 0, ACCEL)
 			velocity.z = move_toward(velocity.z, 0, ACCEL)

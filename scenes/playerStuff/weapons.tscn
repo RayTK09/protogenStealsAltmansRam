@@ -27,3 +27,7 @@ debug_shape_custom_color = Color(1, 1, 1, 1)
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" unique_id=832492693]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 0, 0)
 shape = SubResource("BoxShape3D_78ya6")
+disabled = true
+
+[node name="Timer" type="Timer" parent="." unique_id=744338224]
+one_shot = true

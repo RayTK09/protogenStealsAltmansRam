@@ -10,6 +10,7 @@ class_name weapons
 @export var ammo := 17
 @export var range := 10
 @export var damage := 10
+@export var timeBetweenShots := 1.0
 
 enum weaponType {
 	MELEE,
@@ -27,6 +28,11 @@ func _ready() -> void:
 	weaponRange.target_position = Vector3(0, 0, -range)
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
+func _input(event: InputEvent) -> void:
+	if Input.is_action_just_pressed("fire"):
+		if weaponRange.get_collider() == null:
+			pass
+		else:
+			weaponRange.get_collider().health -= damage
+			print(weaponRange.get_collider().health)
+	
