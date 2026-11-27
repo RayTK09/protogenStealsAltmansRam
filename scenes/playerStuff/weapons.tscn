@@ -10,8 +10,6 @@ size = Vector3(1.2, 1, 1)
 
 [node name="weapons" type="Node3D" unique_id=1990929830]
 script = ExtResource("1_fjp46")
-weaponName = "fists"
-type = 0
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1337707592]
 mesh = SubResource("BoxMesh_2qw5g")
@@ -30,4 +28,9 @@ shape = SubResource("BoxShape3D_78ya6")
 disabled = true
 
 [node name="Timer" type="Timer" parent="." unique_id=744338224]
+wait_time = 0.2
+one_shot = true
+
+[node name="scrollTimer" type="Timer" parent="." unique_id=1510861561]
+wait_time = 0.5
 one_shot = true

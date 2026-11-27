@@ -12,6 +12,7 @@ const JUMP_VELOCITY := 6
 @onready var animationPlayer := $AnimationPlayer
 
 var health := 100
+var def := 50
 var rotY : float
 var rotX : float
 var speedMod := 1.0

@@ -4,7 +4,9 @@ const SPEED := 2.0
 const ACCEL := 3.0
 
 @onready var nav := $NavigationAgent3D
-@onready var player
+
+@export var player : player
+
 var health := 100
 
 enum enemyState {
@@ -16,14 +18,15 @@ enum enemyState {
 
 
 func _ready() -> void:
-	player = get_node('/root/test/player')
+	var getParentNode = get_parent()
+	player = getParentNode.get_child(0)
 
 
 func _physics_process(delta: float) -> void:
 	# Add the gravity.
 	if not is_on_floor():
 		velocity += get_gravity() * delta
-		
+	
 	look_at(player.position)
 	
 	#I have used this tutorial to figure out how to move the enemy to the players position
@@ -41,5 +44,5 @@ func _physics_process(delta: float) -> void:
 	if health <= 0:
 		queue_free()
 	
-	print(nav.get_next_path_position())
+	#print(nav.get_next_path_position())
 	nav.target_position = player.position
