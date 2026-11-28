@@ -12,6 +12,7 @@ size = Vector3(1.2, 1, 1)
 script = ExtResource("1_fjp46")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1337707592]
+layers = 2
 mesh = SubResource("BoxMesh_2qw5g")
 
 [node name="RayCast3D" type="RayCast3D" parent="." unique_id=702965883]
@@ -32,5 +33,8 @@ wait_time = 0.2
 one_shot = true
 
 [node name="scrollTimer" type="Timer" parent="." unique_id=1510861561]
-wait_time = 0.5
+wait_time = 0.2
 one_shot = true
+
+[node name="reloadTimer" type="Timer" parent="." unique_id=803745825]
+wait_time = 2.0

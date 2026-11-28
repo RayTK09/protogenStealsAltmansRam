@@ -2,14 +2,16 @@ extends CharacterBody3D
 
 class_name player
 
-const SPEED := 5.0
-const ACCEL := 3.0
+const SPEED := 7.0
+const ACCEL := 25.0
 const JUMP_VELOCITY := 6
 
 @onready var global : globals = get_node("/root/Gobals")
 @onready var camera := $Camera3D
 @onready var weapon := $Camera3D/weapons
 @onready var animationPlayer := $AnimationPlayer
+@onready var currentWeaponLabel := $Control/AspectRatioContainer/Label
+@onready var wallrunTimer := $wallrunTimer
 
 var health := 100
 var def := 50
@@ -17,6 +19,8 @@ var rotY : float
 var rotX : float
 var speedMod := 1.0
 var currentPlayerState : playerState = playerState.PLAY
+var doubleJump := false
+var wallNormal
 
 enum playerState {
 	PLAY,
@@ -27,6 +31,8 @@ enum playerState {
 
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	weapon.currentWeapon = 1
+	currentWeaponLabel.text = weapon.weaponName
 
 
 func _input(event: InputEvent) -> void:
@@ -54,6 +60,15 @@ func _input(event: InputEvent) -> void:
 	elif Input.is_action_just_released("crouch"):
 		animationPlayer.play_backwards("crouch")
 		speedMod = 1
+	
+	if Input.is_action_just_pressed("changeWeaponNext") and weapon.scrollTimeout.is_stopped():
+		weapon.changeWeapon(1)
+		weapon.scrollTimeout.start()
+		currentWeaponLabel.text = weapon.weaponName
+	elif Input.is_action_just_pressed("changeWeaponPrevious") and weapon.scrollTimeout.is_stopped():
+		weapon.changeWeapon(-1)
+		weapon.scrollTimeout.start()
+		currentWeaponLabel.text = weapon.weaponName
 
 
 func _physics_process(delta: float) -> void:
@@ -65,14 +80,34 @@ func _physics_process(delta: float) -> void:
 		# Handle jump.
 		if Input.is_action_just_pressed("jump") and is_on_floor():
 			velocity.y = JUMP_VELOCITY
+		elif Input.is_action_just_pressed("jump") and !is_on_floor() and !doubleJump:
+			velocity.y = JUMP_VELOCITY
+			doubleJump = true
+		
+		if is_on_floor() or is_on_wall():
+			doubleJump = false
+		
 
 		var input_dir := Input.get_vector("left", "right", "forward", "backward")
 		var direction := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 		if direction:
-			velocity.x = move_toward(0, (SPEED * speedMod) * direction.x, ACCEL)
-			velocity.z = move_toward(0, (SPEED * speedMod) * direction.z, ACCEL)
+			velocity.x = move_toward(velocity.x, (SPEED * speedMod) * direction.x, ACCEL * delta)
+			velocity.z = move_toward(velocity.z, (SPEED * speedMod) * direction.z, ACCEL * delta) 
 		else:
-			velocity.x = move_toward(velocity.x, 0, ACCEL)
-			velocity.z = move_toward(velocity.z, 0, ACCEL)
-
+			velocity.x = move_toward(velocity.x, 0, ACCEL * delta)
+			velocity.z = move_toward(velocity.z, 0, ACCEL * delta)
+		
 		move_and_slide()
+		
+		#wallrunning
+		#thank you garbaj :)
+		#https://www.youtube.com/watch?v=tF36jenSDD4
+		if is_on_wall() and !is_on_floor() and direction:
+			velocity.y = 0
+			wallNormal = get_slide_collision(0)
+			velocity += -wallNormal.get_normal()
+				
+			
+		print(velocity)
+			
+			
