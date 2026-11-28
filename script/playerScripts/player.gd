@@ -11,7 +11,6 @@ const JUMP_VELOCITY := 6
 @onready var weapon := $Camera3D/weapons
 @onready var animationPlayer := $AnimationPlayer
 @onready var currentWeaponLabel := $Control/AspectRatioContainer/Label
-@onready var wallrunTimer := $wallrunTimer
 
 var health := 100
 var def := 50
@@ -20,6 +19,7 @@ var rotX : float
 var speedMod := 1.0
 var currentPlayerState : playerState = playerState.PLAY
 var doubleJump := false
+var canWallrun := true
 var wallNormal
 
 enum playerState {
@@ -74,9 +74,9 @@ func _input(event: InputEvent) -> void:
 func _physics_process(delta: float) -> void:
 	if currentPlayerState == playerState.PLAY:
 		# Add the gravity.
-		if not is_on_floor():
+		if !is_on_floor() and !is_on_wall():
 			velocity += get_gravity() * delta
-
+		
 		# Handle jump.
 		if Input.is_action_just_pressed("jump") and is_on_floor():
 			velocity.y = JUMP_VELOCITY
@@ -87,7 +87,6 @@ func _physics_process(delta: float) -> void:
 		if is_on_floor() or is_on_wall():
 			doubleJump = false
 		
-
 		var input_dir := Input.get_vector("left", "right", "forward", "backward")
 		var direction := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 		if direction:
@@ -102,12 +101,18 @@ func _physics_process(delta: float) -> void:
 		#wallrunning
 		#thank you garbaj :)
 		#https://www.youtube.com/watch?v=tF36jenSDD4
-		if is_on_wall() and !is_on_floor() and direction:
-			velocity.y = 0
-			wallNormal = get_slide_collision(0)
-			velocity += -wallNormal.get_normal()
-				
-			
-		print(velocity)
-			
-			
+		wallrun(direction, delta)
+		print(canWallrun)
+
+
+func wallrun(direction, delta):
+	if is_on_wall() and !is_on_floor() and direction and canWallrun:
+		velocity.y = 0
+		wallNormal = get_slide_collision(0)
+		velocity += -wallNormal.get_normal()
+		
+		if Input.is_action_just_pressed("jump"):
+			canWallrun = false
+			velocity.y = JUMP_VELOCITY
+			await get_tree().create_timer(2).timeout
+			canWallrun = true

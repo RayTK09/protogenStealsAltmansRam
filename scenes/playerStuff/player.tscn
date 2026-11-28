@@ -125,6 +125,3 @@ offset_bottom = 883.0
 layout_mode = 2
 text = "placeholder"
 label_settings = SubResource("LabelSettings_2qw5g")
-
-[node name="wallrunTimer" type="Timer" parent="." unique_id=1806943221]
-wait_time = 5.0

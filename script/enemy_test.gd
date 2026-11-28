@@ -4,6 +4,7 @@ const SPEED := 2.0
 const ACCEL := 3.0
 
 @onready var nav := $NavigationAgent3D
+@onready var mesh := $CollisionShape3D/MeshInstance3D
 
 @export var player : player
 
@@ -27,7 +28,7 @@ func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 	
-	look_at(player.position)
+	mesh.look_at(player.position)
 	
 	#I have used this tutorial to figure out how to move the enemy to the players position
 	#https://www.youtube.com/watch?v=XvRY-g27OQk
